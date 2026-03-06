@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zinero - 个人主页</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #fafafa;
+      --text: #2c2c2c;
+      --accent: #5b6abf;
+      --accent-light: #e8eaff;
+      --card-bg: #ffffff;
+      --shadow: rgba(91, 106, 191, 0.08);
+      --nav-bg: rgba(250, 250, 250, 0.85);
+      --timeline-line: #e0e0e0;
+      --sub-text: #555;
+      --muted: #888;
+      --footer-text: #aaa;
+    }
+
+    [data-theme="dark"] {
+      --bg: #121218;
+      --text: #e4e4e7;
+      --accent: #818cf8;
+      --accent-light: #2a2a40;
+      --card-bg: #1e1e2a;
+      --shadow: rgba(0, 0, 0, 0.3);
+      --nav-bg: rgba(18, 18, 24, 0.85);
+      --timeline-line: #333;
+      --sub-text: #a0a0b0;
+      --muted: #888;
+      --footer-text: #666;
+    }
+
+    body {
+      font-family: -apple-system, "Segoe UI", "Noto Sans SC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    /* 顶部导航 */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 16px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+      transition: box-shadow 0.3s;
+    }
+
+    nav.scrolled { box-shadow: 0 2px 20px var(--shadow); }
+
+    nav .logo {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--accent);
+      cursor: default;
+    }
+
+    nav .nav-links a {
+      margin-left: 28px;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    nav .nav-links a:hover { color: var(--accent); }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 120px 20px 80px;
+      position: relative;
+    }
+
+    .hero-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 32px;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .hero-avatar:hover { transform: scale(1.15) rotate(10deg); }
+
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .hero h1 .wave {
+      display: inline-block;
+      animation: wave 2.5s infinite;
+      transform-origin: 70% 70%;
+    }
+
+    @keyframes wave {
+      0%, 60%, 100% { transform: rotate(0deg); }
+      10% { transform: rotate(14deg); }
+      20% { transform: rotate(-8deg); }
+      30% { transform: rotate(14deg); }
+      40% { transform: rotate(-4deg); }
+      50% { transform: rotate(10deg); }
+    }
+
+    .hero .tagline {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 480px;
+      margin-bottom: 36px;
+    }
+
+    .hero .scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      animation: bounce 2s infinite;
+      color: #bbb;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-12px); }
+      60% { transform: translateY(-6px); }
+    }
+
+    /* 通用 section */
+    section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 80px 20px;
+    }
+
+    section h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 40px;
+      position: relative;
+      display: inline-block;
+    }
+
+    section h2::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+
+    section h2:hover::after { width: 100%; }
+
+    /* 关于我 */
+    .about-content {
+      font-size: 16px;
+      color: var(--sub-text);
+      line-height: 1.9;
+    }
+
+    /* 技能 */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+    }
+
+    .skill-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 2px 12px var(--shadow);
+      transition: box-shadow 0.3s;
+      cursor: default;
+      transform-style: preserve-3d;
+      position: relative;
+      overflow: hidden;
+      will-change: transform;
+    }
+
+    .skill-card:hover {
+      box-shadow: 0 8px 30px rgba(91, 106, 191, 0.15);
+    }
+
+    .skill-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .skill-card h3 {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* 兴趣爱好 */
+    .hobbies-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .hobby-tag {
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: transform 0.2s, background 0.2s;
+      cursor: default;
+    }
+
+    .hobby-tag:hover {
+      background: var(--accent);
+      color: white;
+      transform: scale(1.08);
+    }
+
+    /* 时间线 */
+    .timeline {
+      position: relative;
+      padding-left: 32px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--timeline-line);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 36px;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -29px;
+      top: 6px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 3px solid var(--accent-light);
+    }
+
+    .timeline-item .year {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .timeline-item p {
+      font-size: 15px;
+      color: var(--sub-text);
+    }
+
+    /* 联系 */
+    .contact-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      background: var(--card-bg);
+      box-shadow: 0 2px 12px var(--shadow);
+      text-decoration: none;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .contact-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 24px rgba(91, 106, 191, 0.18);
+    }
+
+    /* 页脚 */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 13px;
+      color: var(--footer-text);
+    }
+
+    /* 互动小彩蛋 - 鼠标跟随粒子 */
+    .particle {
+      position: fixed;
+      pointer-events: none;
+      border-radius: 50%;
+      z-index: 9999;
+      animation: fadeOut 0.8s forwards;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0); }
+    }
+
+    /* 渐入动画 */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 暗黑模式切换按钮 */
+    .theme-toggle {
+      background: none;
+      border: 2px solid var(--accent-light);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s, border-color 0.3s;
+      margin-left: 20px;
+      flex-shrink: 0;
+    }
+
+    .theme-toggle:hover { transform: rotate(30deg) scale(1.1); }
+
+    /* 打字机光标 */
+    .typewriter-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: var(--accent);
+      margin-left: 2px;
+      animation: cursorBlink 1s step-end infinite;
+      vertical-align: text-bottom;
+    }
+
+    @keyframes cursorBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* 技能卡片 3D 效果 */
+    .skills-grid {
+      perspective: 800px;
+    }
+
+    .skill-card .card-glare {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      border-radius: 12px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 60%);
+    }
+
+    /* 鼠标拖尾 */
+    .mouse-trail {
+      position: fixed;
+      pointer-events: none;
+      border-radius: 50%;
+      z-index: 9998;
+      animation: trailFade 0.8s forwards;
+    }
+
+    @keyframes trailFade {
+      0% { opacity: 0.8; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.3); }
+    }
+
+    /* Konami Code 彩蛋 - 纸屑 */
+    .confetti-piece {
+      position: fixed;
+      z-index: 99999;
+      pointer-events: none;
+      animation: confettiFall linear forwards;
+    }
+
+    @keyframes confettiFall {
+      0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+      100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+    }
+
+    /* 页脚彩蛋 */
+    footer p {
+      cursor: pointer;
+      transition: color 0.3s;
+      user-select: none;
+    }
+
+    footer p:hover { color: var(--accent); }
+
+    nav, .contact-link, .hobby-tag, section h2::after,
+    .timeline-item::before, footer {
+      transition-property: background, color, box-shadow, border-color, transform;
+      transition-duration: 0.4s;
+    }
+
+    /* 响应式 */
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 32px; }
+      .hero .tagline { font-size: 15px; }
+      nav { padding: 12px 20px; }
+      nav .nav-links a { margin-left: 16px; font-size: 13px; }
+      section { padding: 60px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 导航 -->
+  <nav>
+    <div class="logo">Z.</div>
+    <div class="nav-links">
+      <a href="#about">关于</a>
+      <a href="#skills">技能</a>
+      <a href="#journey">旅程</a>
+      <a href="#contact">联系</a>
+      <button class="theme-toggle" id="themeToggle" aria-label="切换主题">&#x1F319;</button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-avatar">Z</div>
+    <h1>Hi, I'm Zinero <span class="wave">&#x1F44B;</span></h1>
+    <p class="tagline"><span id="typewriter"></span><span class="typewriter-cursor"></span></p>
+    <div class="scroll-hint" onclick="document.querySelector('#about').scrollIntoView({behavior:'smooth'})">&#8595;</div>
+  </div>
+
+  <!-- 关于 -->
+  <section id="about" class="fade-in">
+    <h2>关于我</h2>
+    <div class="about-content">
+      <p>嘿！我是 Zinero，一个对世界充满好奇的人。我热爱探索技术与创意的交汇点，相信好的作品既要实用，也要让人愉悦。</p>
+      <br>
+      <p>不写代码的时候，你可能会发现我在探索新想法、学一些完全随机的东西，或者只是望着天空思考宇宙的奥秘。</p>
+    </div>
+  </section>
+
+  <!-- 技能 -->
+  <section id="skills" class="fade-in">
+    <h2>技能</h2>
+    <div class="skills-grid">
+      <div class="skill-card" data-tilt>
+        <div class="card-glare"></div>
+        <div class="skill-icon">&#x1F4BB;</div>
+        <h3>编程开发</h3>
+      </div>
+      <div class="skill-card" data-tilt>
+        <div class="card-glare"></div>
+        <div class="skill-icon">&#x1F3A8;</div>
+        <h3>设计美学</h3>
+      </div>
+      <div class="skill-card" data-tilt>
+        <div class="card-glare"></div>
+        <div class="skill-icon">&#x1F4DA;</div>
+        <h3>持续学习</h3>
+      </div>
+      <div class="skill-card" data-tilt>
+        <div class="card-glare"></div>
+        <div class="skill-icon">&#x1F680;</div>
+        <h3>解决问题</h3>
+      </div>
+      <div class="skill-card" data-tilt>
+        <div class="card-glare"></div>
+        <div class="skill-icon">&#x1F30D;</div>
+        <h3>探索世界</h3>
+      </div>
+      <div class="skill-card" data-tilt>
+        <div class="card-glare"></div>
+        <div class="skill-icon">&#x2615;</div>
+        <h3>品味咖啡</h3>
+      </div>
+    </div>
+  </section>
+
+  <!-- 兴趣 -->
+  <section class="fade-in">
+    <h2>兴趣爱好</h2>
+    <div class="hobbies-list">
+      <span class="hobby-tag">科技</span>
+      <span class="hobby-tag">音乐</span>
+      <span class="hobby-tag">摄影</span>
+      <span class="hobby-tag">阅读</span>
+      <span class="hobby-tag">游戏</span>
+      <span class="hobby-tag">咖啡</span>
+      <span class="hobby-tag">开源</span>
+      <span class="hobby-tag">夜间漫步</span>
+    </div>
+  </section>
+
+  <!-- 旅程 -->
+  <section id="journey" class="fade-in">
+    <h2>成长旅程</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="year">启程</div>
+        <p>第一次接触电脑，发现这里藏着无限的魔法。</p>
+      </div>
+      <div class="timeline-item">
+        <div class="year">觉醒</div>
+        <p>写下了第一行代码，屏幕上出现了 "Hello, World!" —— 一切从此改变。</p>
+      </div>
+      <div class="timeline-item">
+        <div class="year">磨砺</div>
+        <p>深入编程的世界，搭建项目、踩坑、修复、再来一遍，乐此不疲。</p>
+      </div>
+      <div class="timeline-item">
+        <div class="year">此刻</div>
+        <p>依然在探索，依然在创造，依然充满好奇。最好的，还在路上。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 联系 -->
+  <section id="contact" class="fade-in">
+    <h2>联系我</h2>
+    <div class="contact-links">
+      <a class="contact-link" href="mailto:hello@zinero.dev">&#x2709;&#xFE0F; 邮箱</a>
+      <a class="contact-link" href="https://github.com/zinero" target="_blank">&#x1F431; GitHub</a>
+      <a class="contact-link" href="#" target="_blank">&#x1F426; Twitter</a>
+    </div>
+  </section>
+
+  <footer>
+    <p id="footerText">&copy; 2026 Zinero. 以好奇心驱动。</p>
+  </footer>
+
+  <script>
+    // 导航栏滚动效果
+    window.addEventListener('scroll', () => {
+      document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // 滚动渐入动画
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // 鼠标点击粒子彩蛋
+    document.addEventListener('click', (e) => {
+      const colors = ['#5b6abf', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444', '#ec4899'];
+      for (let i = 0; i < 6; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        const size = Math.random() * 8 + 4;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.left = e.clientX + (Math.random() - 0.5) * 40 + 'px';
+        particle.style.top = e.clientY + (Math.random() - 0.5) * 40 + 'px';
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 800);
+      }
+    });
+
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // ========== 1. 暗黑模式切换 ==========
+    (function() {
+      const toggle = document.getElementById('themeToggle');
+      const saved = localStorage.getItem('zinero-theme');
+      if (saved === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        toggle.textContent = '\u2600\uFE0F';
+      }
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+          document.documentElement.removeAttribute('data-theme');
+          toggle.textContent = '\uD83C\uDF19';
+          localStorage.setItem('zinero-theme', 'light');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          toggle.textContent = '\u2600\uFE0F';
+          localStorage.setItem('zinero-theme', 'dark');
+        }
+      });
+    })();
+
+    // ========== 2. 打字机效果 ==========
+    (function() {
+      const phrases = [
+        '探索者 / 创造者 / 思考者',
+        '代码是我的画笔',
+        '永远保持好奇心',
+        '用技术改变世界',
+        '在 Bug 中成长'
+      ];
+      const el = document.getElementById('typewriter');
+      let phraseIdx = 0, charIdx = 0, deleting = false;
+
+      function tick() {
+        const current = phrases[phraseIdx];
+        if (!deleting) {
+          el.textContent = current.slice(0, charIdx + 1);
+          charIdx++;
+          if (charIdx >= current.length) {
+            setTimeout(() => { deleting = true; tick(); }, 1800);
+            return;
+          }
+          setTimeout(tick, 100);
+        } else {
+          el.textContent = current.slice(0, charIdx);
+          charIdx--;
+          if (charIdx < 0) {
+            deleting = false;
+            charIdx = 0;
+            phraseIdx = (phraseIdx + 1) % phrases.length;
+            setTimeout(tick, 400);
+            return;
+          }
+          setTimeout(tick, 50);
+        }
+      }
+      tick();
+    })();
+
+    // ========== 3. 技能卡片 3D 倾斜 ==========
+    document.querySelectorAll('[data-tilt]').forEach(card => {
+      const glare = card.querySelector('.card-glare');
+
+      card.addEventListener('mouseenter', () => {
+        card.style.transition = 'none';
+      });
+
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = ((y - centerY) / centerY) * -20;
+        const rotateY = ((x - centerX) / centerX) * 20;
+
+        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.08)`;
+        if (glare) {
+          glare.style.opacity = '1';
+          glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.4) 0%, transparent 60%)`;
+        }
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transition = 'transform 0.4s ease';
+        card.style.transform = '';
+        if (glare) glare.style.opacity = '0';
+      });
+    });
+
+    // ========== 4. Konami Code 彩蛋 ==========
+    (function() {
+      const code = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','KeyB','KeyA'];
+      let pos = 0;
+
+      document.addEventListener('keydown', (e) => {
+        if (e.code === code[pos]) {
+          pos++;
+          if (pos === code.length) {
+            pos = 0;
+            launchConfetti();
+          }
+        } else {
+          pos = 0;
+        }
+      });
+
+      function launchConfetti() {
+        const colors = ['#5b6abf','#8b5cf6','#f59e0b','#10b981','#ef4444','#ec4899','#06b6d4','#f97316'];
+        const shapes = ['square','circle'];
+        for (let i = 0; i < 120; i++) {
+          const piece = document.createElement('div');
+          piece.className = 'confetti-piece';
+          const size = Math.random() * 10 + 6;
+          const shape = shapes[Math.floor(Math.random() * shapes.length)];
+          piece.style.width = size + 'px';
+          piece.style.height = size + 'px';
+          piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+          piece.style.left = Math.random() * 100 + 'vw';
+          piece.style.top = -20 + 'px';
+          piece.style.borderRadius = shape === 'circle' ? '50%' : '2px';
+          piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+          piece.style.animationDelay = (Math.random() * 0.8) + 's';
+          document.body.appendChild(piece);
+          setTimeout(() => piece.remove(), 4000);
+        }
+      }
+    })();
+
+    // ========== 5. 鼠标拖尾光效 ==========
+    (function() {
+      const trailColors = ['#818cf8','#a78bfa','#f472b6','#34d399','#fbbf24','#fb923c'];
+      let lastTime = 0;
+
+      document.addEventListener('mousemove', (e) => {
+        const now = Date.now();
+        if (now - lastTime < 25) return;
+        lastTime = now;
+
+        const dot = document.createElement('div');
+        dot.className = 'mouse-trail';
+        const size = Math.random() * 8 + 6;
+        dot.style.width = size + 'px';
+        dot.style.height = size + 'px';
+        dot.style.background = trailColors[Math.floor(Math.random() * trailColors.length)];
+        dot.style.left = e.clientX - size / 2 + 'px';
+        dot.style.top = e.clientY - size / 2 + 'px';
+        document.body.appendChild(dot);
+        setTimeout(() => dot.remove(), 800);
+      });
+    })();
+
+    // ========== 6. 互动式页脚彩蛋 ==========
+    (function() {
+      const quotes = [
+        '\u00A9 2026 Zinero. 以好奇心驱动。',
+        '\u00A9 2026 Zinero. 今天也是元气满满的一天！',
+        '\u00A9 2026 Zinero. 代码即艺术。',
+        '\u00A9 2026 Zinero. 404: 无聊 Not Found。',
+        '\u00A9 2026 Zinero. 永远年轻，永远热泪盈眶。',
+        '\u00A9 2026 Zinero. 你发现了这个彩蛋！',
+        '\u00A9 2026 Zinero. console.log("hello world")',
+        '\u00A9 2026 Zinero. 凌晨三点的代码最浪漫。',
+        '\u00A9 2026 Zinero. 少写 Bug，多喝水。'
+      ];
+      const footerText = document.getElementById('footerText');
+      footerText.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const current = footerText.textContent;
+        let next;
+        do {
+          next = quotes[Math.floor(Math.random() * quotes.length)];
+        } while (next === current && quotes.length > 1);
+        footerText.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          footerText.textContent = next;
+          footerText.style.transform = 'scale(1)';
+        }, 150);
+      });
+    })();
+  </script>
+
+</body>
+</html>
